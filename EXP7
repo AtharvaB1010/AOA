@@ -1,0 +1,62 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+#define MAX 100
+
+typedef struct {
+    int u, v, w;
+} Edge;
+
+Edge edges[MAX];
+Edge result[MAX];
+int parent[MAX];
+
+int find(int i) {
+    while (parent[i] != i)
+        i = parent[i];
+    return i;
+}
+
+void union_set(int i, int j) {
+    int a = find(i);
+    int b = find(j);
+    parent[a] = b;
+}
+
+int compare(const void *a, const void *b) {
+    return ((Edge *)a)->w - ((Edge *)b)->w;
+}
+
+void kruskal(int n, int edge_count) {
+    int i, j, cost = 0;
+    for (i = 0; i < n; i++)
+        parent[i] = i;
+
+    for (i = 0, j = 0; i < edge_count && j < n - 1; i++) {
+        if (find(edges[i].u) != find(edges[i].v)) {
+            result[j++] = edges[i];
+            union_set(edges[i].u, edges[i].v);
+            cost += edges[i].w;
+        }
+    }
+
+    printf("Edges in the Minimum Cost Spanning Tree:\n");
+    for (i = 0; i < j; i++)
+        printf("%d -- %d == %d\n", result[i].u, result[i].v, result[i].w);
+    printf("Minimum Cost: %d\n", cost);
+}
+
+int main() {
+    int n = 4, edge_count = 5;
+
+    edges[0] = (Edge){0, 1, 10};
+    edges[1] = (Edge){0, 2, 6};
+    edges[2] = (Edge){0, 3, 5};
+    edges[3] = (Edge){1, 3, 15};
+    edges[4] = (Edge){2, 3, 4};
+
+    qsort(edges, edge_count, sizeof(Edge), compare);
+    kruskal(n, edge_count);
+
+    return 0;
+}
